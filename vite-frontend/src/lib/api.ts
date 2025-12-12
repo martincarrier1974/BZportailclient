@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-// Détection automatique de l'URL de l'API - fonctionne avec n'importe quelle URL Railway
+// Détection automatique de l'URL de l'API
+// En production: même service = même hostname, donc /api
+// En développement: backend sur localhost:3001
 function getApiUrl(): string {
   // 1. Si VITE_API_URL est défini (variable Railway), l'utiliser
   if (import.meta.env.VITE_API_URL) {
@@ -12,40 +14,9 @@ function getApiUrl(): string {
     return 'http://localhost:3001/api';
   }
   
-  // 3. En production Railway, détection automatique intelligente
-  const currentHost = window.location.hostname;
+  // 3. En production: même service = même hostname, API sur /api
   const currentProtocol = window.location.protocol;
-  
-  // Si c'est un domaine Railway
-  if (currentHost.includes('railway.app')) {
-    // Essayer plusieurs stratégies pour trouver le backend
-    
-    // Stratégie 1: Remplacer "frontend" ou "vite" par "backend"
-    if (currentHost.includes('frontend') || currentHost.includes('vite')) {
-      const backendHost = currentHost.replace(/frontend|vite/i, 'backend');
-      return `${currentProtocol}//${backendHost}/api`;
-    }
-    
-    // Stratégie 2: Si le nom contient le nom du projet, essayer backend-{nom}
-    // Ex: bzportailclient-production -> backend-bzportailclient-production
-    const hostParts = currentHost.split('.');
-    const firstPart = hostParts[0];
-    
-    // Si le premier segment ne contient pas "backend", l'ajouter
-    if (!firstPart.includes('backend')) {
-      // Enlever les suffixes comme -production, -main, etc.
-      const baseName = firstPart.replace(/-production$|-main$|-develop$/, '');
-      hostParts[0] = `backend-${baseName}`;
-      const backendHost = hostParts.join('.');
-      return `${currentProtocol}//${backendHost}/api`;
-    }
-    
-    // Stratégie 3: Essayer avec le même hostname (si backend et frontend sont sur le même service)
-    // Railway peut parfois mettre plusieurs services sur le même domaine
-    return `${currentProtocol}//${currentHost}/api`;
-  }
-  
-  // 4. Fallback : utiliser l'URL actuelle avec /api (pour autres plateformes)
+  const currentHost = window.location.host;
   return `${currentProtocol}//${currentHost}/api`;
 }
 

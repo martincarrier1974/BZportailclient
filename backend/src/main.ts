@@ -2,9 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Enable CORS for frontend
   // En production Railway, permet TOUTES les origines pour que ça fonctionne peu importe l'URL
@@ -43,6 +45,29 @@ async function bootstrap() {
 
   // Global prefix
   app.setGlobalPrefix('api');
+
+  // Serve static files from frontend build in production
+  if (isProduction) {
+    const frontendPath = join(__dirname, '..', 'public');
+    
+    // Serve static assets (JS, CSS, images, etc.)
+    app.useStaticAssets(frontendPath, {
+      index: false,
+    });
+    
+    // SPA fallback: serve index.html for all non-API routes
+    const express = app.getHttpAdapter().getInstance();
+    express.get('*', (req, res, next) => {
+      // Skip API routes
+      if (req.url.startsWith('/api')) {
+        return next();
+      }
+      // Serve index.html for all other routes (SPA routing)
+      res.sendFile(join(frontendPath, 'index.html'));
+    });
+    
+    console.log('📦 Serving static files from:', frontendPath);
+  }
 
   // Winston logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
