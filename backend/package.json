@@ -21,7 +21,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:db:push": "prisma db push",
+    "prisma:db:push": "prisma db push --accept-data-loss",
+    "prisma:db:push:force": "prisma db push --force-reset --accept-data-loss",
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
     "postinstall": "prisma generate"
