@@ -49,16 +49,24 @@ async function bootstrap() {
 
   // Railway injecte automatiquement PORT via variable d'environnement
   // Ne JAMAIS définir PORT manuellement dans Railway - laisser Railway gérer
-  const port = process.env.PORT;
+  // En développement local, utilise 3001 comme fallback
+  const port = process.env.PORT || (process.env.NODE_ENV === 'production' ? undefined : '3001');
   
   if (!port) {
-    console.error('❌ PORT environment variable is required');
+    console.error('❌ PORT environment variable is required in production');
     console.error('💡 Railway injecte automatiquement PORT - ne pas le définir manuellement');
+    console.error('💡 Si vous voyez cette erreur, vérifiez que Railway a bien injecté PORT');
     process.exit(1);
   }
   
-  await app.listen(parseInt(port, 10), '0.0.0.0');
-  console.log(`🚀 Backend API running on port ${port} (injecté par Railway)`);
+  const portNumber = parseInt(port, 10);
+  await app.listen(portNumber, '0.0.0.0');
+  
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`🚀 Backend API running on port ${portNumber} (injecté par Railway)`);
+  } else {
+    console.log(`🚀 Backend API running on port ${portNumber} (développement local)`);
+  }
   console.log(`📡 API available at /api`);
 }
 
