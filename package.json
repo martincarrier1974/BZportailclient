@@ -6,11 +6,8 @@
     "dev": "concurrently --names \"BACKEND,VITE\" --prefix-colors \"blue,green\" \"npm run dev:backend\" \"npm run dev:vite\"",
     "dev:backend": "cd backend && npm run start:dev",
     "dev:vite": "cd vite-frontend && npm run dev",
-    "build": "next build",
     "build:backend": "cd backend && npm run build",
-    "build:frontend": "cd frontend && npm run build",
-    "start": "next start",
-    "lint": "next lint"
+    "build:vite": "cd vite-frontend && npm run build"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.0",

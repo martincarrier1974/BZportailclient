@@ -1,0 +1,15 @@
+# Ignorer l'ancien frontend Next.js à la racine
+app/
+components/
+lib/
+next.config.js.disabled
+postcss.config.js
+tailwind.config.ts
+tsconfig.json
+
+# Garder seulement ce qui est nécessaire pour le monorepo
+!backend/
+!vite-frontend/
+!package.json
+!package-lock.json
+
