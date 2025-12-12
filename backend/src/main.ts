@@ -47,16 +47,18 @@ async function bootstrap() {
   // Winston logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
-  // Railway injecte automatiquement PORT - ne pas définir PORT manuellement dans Railway
-  // En production, Railway fournit toujours PORT. Le 3001 est seulement pour le dev local.
-  const port = process.env.PORT || (process.env.NODE_ENV === 'production' ? undefined : 3001);
+  // Railway injecte automatiquement PORT via variable d'environnement
+  // Ne JAMAIS définir PORT manuellement dans Railway - laisser Railway gérer
+  const port = process.env.PORT;
   
   if (!port) {
-    console.error('❌ PORT environment variable is required in production');
+    console.error('❌ PORT environment variable is required');
+    console.error('💡 Railway injecte automatiquement PORT - ne pas le définir manuellement');
     process.exit(1);
   }
-  await app.listen(port, '0.0.0.0');
-  console.log(`🚀 Backend API running on port ${port}`);
+  
+  await app.listen(parseInt(port, 10), '0.0.0.0');
+  console.log(`🚀 Backend API running on port ${port} (injecté par Railway)`);
   console.log(`📡 API available at /api`);
 }
 
