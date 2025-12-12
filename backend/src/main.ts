@@ -47,29 +47,31 @@ async function bootstrap() {
   // Winston logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
-  // Railway injecte automatiquement PORT via variable d'environnement
-  // Ne JAMAIS définir PORT manuellement dans Railway - laisser Railway gérer
-  // En développement local, utilise 3001 comme fallback
-  const port = process.env.PORT || (process.env.NODE_ENV === 'production' ? undefined : '3001');
+  // Railway injecte automatiquement PORT - utiliser uniquement cette variable
+  // Ne JAMAIS définir PORT manuellement dans Railway
+  const port = process.env.PORT;
   
   if (!port) {
+    // En développement local seulement, utiliser un port par défaut
+    if (process.env.NODE_ENV !== 'production') {
+      const devPort = '3001';
+      await app.listen(parseInt(devPort, 10), '0.0.0.0');
+      console.log(`🚀 Backend API running on port ${devPort} (développement local)`);
+      console.log(`📡 API available at /api`);
+      return;
+    }
+    
+    // En production, PORT est obligatoire (injecté par Railway)
     console.error('❌ PORT environment variable is required in production');
-    console.error('💡 Railway injecte automatiquement PORT - ne pas le définir manuellement');
-    console.error('💡 Si vous voyez cette erreur, vérifiez que Railway a bien injecté PORT');
+    console.error('💡 Railway doit injecter PORT automatiquement');
     process.exit(1);
   }
   
+  // En production Railway, utiliser le port injecté
   const portNumber = parseInt(port, 10);
   await app.listen(portNumber, '0.0.0.0');
-  
-  // En production, ne pas logger le port pour éviter que Railway le détecte
-  if (process.env.NODE_ENV === 'production') {
-    console.log(`🚀 Backend API started successfully`);
-    console.log(`📡 API available at /api`);
-  } else {
-    console.log(`🚀 Backend API running on port ${portNumber} (développement local)`);
-    console.log(`📡 API available at /api`);
-  }
+  console.log(`🚀 Backend API started successfully`);
+  console.log(`📡 API available at /api`);
 }
 
 bootstrap();
