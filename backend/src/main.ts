@@ -44,6 +44,8 @@ async function bootstrap() {
   // Winston logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
+  // Railway injecte automatiquement PORT - ne pas définir PORT manuellement dans Railway
+  // Le 3001 est seulement un fallback pour le développement local
   const port = process.env.PORT || 3001;
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Backend API running on port ${port}`);
