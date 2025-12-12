@@ -48,8 +48,13 @@ async function bootstrap() {
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
 
   // Railway injecte automatiquement PORT - ne pas définir PORT manuellement dans Railway
-  // Le 3001 est seulement un fallback pour le développement local
-  const port = process.env.PORT || 3001;
+  // En production, Railway fournit toujours PORT. Le 3001 est seulement pour le dev local.
+  const port = process.env.PORT || (process.env.NODE_ENV === 'production' ? undefined : 3001);
+  
+  if (!port) {
+    console.error('❌ PORT environment variable is required in production');
+    process.exit(1);
+  }
   await app.listen(port, '0.0.0.0');
   console.log(`🚀 Backend API running on port ${port}`);
   console.log(`📡 API available at /api`);
