@@ -71,8 +71,25 @@ async function main() {
 
   console.log('✅ Created read-only user:', readOnlyUser.email);
 
+  // Create Martin Carrier user (SUPER_ADMIN)
+  const martinPassword = await bcrypt.hash('$$Banane007', 12);
+  const martinCarrier = await prisma.user.upsert({
+    where: { email: 'martin.carrier@bzinc.ca' },
+    update: {},
+    create: {
+      email: 'martin.carrier@bzinc.ca',
+      password: martinPassword,
+      firstName: 'Martin',
+      lastName: 'Carrier',
+      role: UserRole.SUPER_ADMIN,
+    },
+  });
+
+  console.log('✅ Created Martin Carrier user:', martinCarrier.email);
+
   console.log('\n📝 Default credentials:');
   console.log('Super Admin: admin@bztelecom.com / admin123');
+  console.log('Martin Carrier: martin.carrier@bzinc.ca / $$Banane007');
   console.log('Tenant Admin: admin@democompany.com / admin123');
   console.log('Read Only: readonly@democompany.com / readonly123');
 }

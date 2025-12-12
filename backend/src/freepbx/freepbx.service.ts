@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PbxInstancesService } from '../pbx-instances/pbx-instances.service';
 import { PBXApiType, PBXStatus } from '@prisma/client';
@@ -9,6 +9,7 @@ import { AmiAdapter } from './adapters/ami.adapter';
 export class FreepbxService {
   constructor(
     private prisma: PrismaService,
+    @Inject(forwardRef(() => PbxInstancesService))
     private pbxInstancesService: PbxInstancesService,
   ) {}
 

@@ -25,6 +25,7 @@
     "prisma:db:push:force": "prisma db push --force-reset --accept-data-loss",
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node prisma/seed.ts",
+    "test:db": "ts-node test-db-connection.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -49,7 +50,7 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^10.2.1",
+    "@nestjs/cli": "^11.0.14",
     "@nestjs/schematics": "^10.0.3",
     "@nestjs/testing": "^10.3.0",
     "@types/bcrypt": "^5.0.2",
