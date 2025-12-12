@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Détection automatique de l'URL de l'API
+// Détection automatique de l'URL de l'API - fonctionne avec n'importe quelle URL Railway
 function getApiUrl(): string {
   // 1. Si VITE_API_URL est défini (variable Railway), l'utiliser
   if (import.meta.env.VITE_API_URL) {
@@ -12,39 +12,49 @@ function getApiUrl(): string {
     return 'http://localhost:3001/api';
   }
   
-  // 3. En production Railway, essayer de détecter depuis l'URL actuelle
-  // Railway utilise des domaines comme: frontend-production-xxxx.up.railway.app
-  // On peut essayer de construire l'URL du backend en remplaçant "frontend" par "backend"
+  // 3. En production Railway, détection automatique intelligente
   const currentHost = window.location.hostname;
   const currentProtocol = window.location.protocol;
   
   // Si c'est un domaine Railway
-  if (currentHost.includes('railway.app') || currentHost.includes('up.railway.app')) {
-    // Essayer de construire l'URL du backend
-    // Format Railway: service-production-xxxx.up.railway.app
-    // On remplace le début du hostname pour pointer vers le backend
-    let backendHost = currentHost;
+  if (currentHost.includes('railway.app')) {
+    // Essayer plusieurs stratégies pour trouver le backend
     
-    // Si le hostname contient "frontend" ou "vite", le remplacer par "backend"
+    // Stratégie 1: Remplacer "frontend" ou "vite" par "backend"
     if (currentHost.includes('frontend') || currentHost.includes('vite')) {
-      backendHost = currentHost.replace(/frontend|vite/i, 'backend');
-    } else {
-      // Sinon, essayer d'ajouter "backend-" au début
-      const parts = currentHost.split('.');
-      if (parts.length > 0 && !parts[0].includes('backend')) {
-        parts[0] = 'backend-' + parts[0];
-        backendHost = parts.join('.');
-      }
+      const backendHost = currentHost.replace(/frontend|vite/i, 'backend');
+      return `${currentProtocol}//${backendHost}/api`;
     }
     
-    return `${currentProtocol}//${backendHost}/api`;
+    // Stratégie 2: Si le nom contient le nom du projet, essayer backend-{nom}
+    // Ex: bzportailclient-production -> backend-bzportailclient-production
+    const hostParts = currentHost.split('.');
+    const firstPart = hostParts[0];
+    
+    // Si le premier segment ne contient pas "backend", l'ajouter
+    if (!firstPart.includes('backend')) {
+      // Enlever les suffixes comme -production, -main, etc.
+      const baseName = firstPart.replace(/-production$|-main$|-develop$/, '');
+      hostParts[0] = `backend-${baseName}`;
+      const backendHost = hostParts.join('.');
+      return `${currentProtocol}//${backendHost}/api`;
+    }
+    
+    // Stratégie 3: Essayer avec le même hostname (si backend et frontend sont sur le même service)
+    // Railway peut parfois mettre plusieurs services sur le même domaine
+    return `${currentProtocol}//${currentHost}/api`;
   }
   
-  // 4. Fallback : utiliser l'URL actuelle avec /api
+  // 4. Fallback : utiliser l'URL actuelle avec /api (pour autres plateformes)
   return `${currentProtocol}//${currentHost}/api`;
 }
 
 const API_URL = getApiUrl();
+
+// Log pour debug (seulement en développement)
+if (import.meta.env.DEV) {
+  console.log('🔗 API URL détectée:', API_URL);
+}
 
 const api = axios.create({
   baseURL: API_URL,
