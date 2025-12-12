@@ -1,0 +1,6 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm run prisma:db:push --accept-data-loss && npm run start:prod"
+

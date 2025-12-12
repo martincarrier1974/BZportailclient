@@ -62,12 +62,14 @@ async function bootstrap() {
   const portNumber = parseInt(port, 10);
   await app.listen(portNumber, '0.0.0.0');
   
+  // En production, ne pas logger le port pour éviter que Railway le détecte
   if (process.env.NODE_ENV === 'production') {
-    console.log(`🚀 Backend API running on port ${portNumber} (injecté par Railway)`);
+    console.log(`🚀 Backend API started successfully`);
+    console.log(`📡 API available at /api`);
   } else {
     console.log(`🚀 Backend API running on port ${portNumber} (développement local)`);
+    console.log(`📡 API available at /api`);
   }
-  console.log(`📡 API available at /api`);
 }
 
 bootstrap();
