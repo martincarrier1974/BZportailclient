@@ -48,7 +48,9 @@ async function bootstrap() {
 
   // Serve static files from frontend build in production
   if (isProduction) {
-    const frontendPath = join(__dirname, '..', 'public');
+    // En production, __dirname est backend/dist/src/
+    // On doit remonter à backend/ puis aller dans public/
+    const frontendPath = join(__dirname, '..', '..', 'public');
     
     // Serve static assets (JS, CSS, images, etc.)
     app.useStaticAssets(frontendPath, {
