@@ -1,5 +1,5 @@
-[phases.setup]
-nixPkgs = ["nodejs-20_x", "postgresql"]
+# Nixpacks détecte automatiquement Node.js depuis package.json
+# PostgreSQL est fourni comme service séparé sur Railway
 
 [phases.install]
 cmds = [
