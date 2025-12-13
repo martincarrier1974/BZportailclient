@@ -13,6 +13,10 @@
     "postinstall": "cd backend && npm ci && cd ../vite-frontend && npm ci"
   },
   "devDependencies": {
-    "concurrently": "^9.2.1"
+    "autoprefixer": "^10.4.22",
+    "concurrently": "^9.2.1",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7"
   }
 }
