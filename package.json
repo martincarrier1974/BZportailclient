@@ -7,7 +7,10 @@
     "dev:backend": "cd backend && npm run start:dev",
     "dev:vite": "cd vite-frontend && npm run dev",
     "build:backend": "cd backend && npm run build",
-    "build:vite": "cd vite-frontend && npm run build"
+    "build:vite": "cd vite-frontend && npm run build",
+    "build": "npm run build:vite && npm run build:backend",
+    "start": "cd backend && npm run start:prod",
+    "postinstall": "cd backend && npm ci && cd ../vite-frontend && npm ci"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
